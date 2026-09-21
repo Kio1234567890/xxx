@@ -14,6 +14,8 @@
       --accent: #ff4d6d;
       --btn: #1f2937;
       --btn-hover: #374151;
+      --input-bg: rgba(255,255,255,0.06);
+      --input-border: rgba(255,255,255,0.12);
     }
 
     * { box-sizing: border-box; }
@@ -34,7 +36,7 @@
 
     .card {
       width: 100%;
-      max-width: 520px;
+      max-width: 560px;
       background: linear-gradient(180deg, rgba(255,255,255,0.08), rgba(255,255,255,0.04));
       border: 1px solid var(--card-border);
       border-radius: 18px;
@@ -57,13 +59,13 @@
       margin-bottom: 8px;
     }
     .badge {
-      width: 40px;
-      height: 40px;
+      width: 44px;
+      height: 44px;
       border-radius: 12px;
       background: linear-gradient(135deg, var(--accent), #fb7185);
       display: grid;
       place-items: center;
-      font-size: 20px;
+      font-size: 22px;
       box-shadow: 0 10px 30px rgba(255,77,109,0.35);
       animation: pulse 2s ease-in-out infinite;
     }
@@ -84,16 +86,17 @@
       line-height: 1.4;
     }
 
-    .photo {
+    .media {
       width: 100%;
-      height: 180px;
+      height: 200px;
       border-radius: 14px;
       background: #0b1220;
       border: 1px solid rgba(255,255,255,0.08);
       overflow: hidden;
       margin: 8px 0 12px;
+      position: relative;
     }
-    .photo img {
+    .media img, .media video {
       width: 100%;
       height: 100%;
       object-fit: cover;
@@ -184,26 +187,29 @@
       text-align: center;
     }
 
-    /* Форма для email (появляется после «Да») */
-    .email-form {
-      margin-top: 12px;
+    /* Форма как в Invitik */
+    .form-block {
+      margin-top: 14px;
       display: none;
+      gap: 10px;
+      flex-direction: column;
+    }
+    .form-block.show { display: flex; }
+    .form-row {
+      display: grid;
       gap: 8px;
     }
-    .email-form.show { display: flex; }
-    .email-form input {
-      flex: 1;
-      background: rgba(255,255,255,0.06);
-      border: 1px solid rgba(255,255,255,0.12);
+    .form-row input {
+      background: var(--input-bg);
+      border: 1px solid var(--input-border);
       border-radius: 10px;
       padding: 10px 12px;
       color: var(--text);
       font-size: 14px;
       outline: none;
     }
-    .email-form input::placeholder { color: #6b7280; }
-    .email-form button {
-      flex: 0 0 auto;
+    .form-row input::placeholder { color: #6b7280; }
+    .form-row button {
       background: #22c55e;
       color: white;
       border: none;
@@ -213,7 +219,7 @@
       font-size: 14px;
       cursor: pointer;
     }
-    .email-form button:hover { filter: brightness(1.05); }
+    .form-row button:hover { filter: brightness(1.05); }
 
     .status {
       margin-top: 8px;
@@ -221,9 +227,33 @@
       display: none;
     }
     .status.show { display: block; }
+
+    /* Плавающие стикеры (как в Invitik) */
+    .stickers {
+      position: fixed;
+      inset: 0;
+      z-index: -1;
+      pointer-events: none;
+      overflow: hidden;
+    }
+    .sticker {
+      position: absolute;
+      font-size: 26px;
+      opacity: 0.9;
+      filter: drop-shadow(0 6px 18px rgba(0,0,0,0.35));
+      animation: floatUp linear infinite;
+    }
+    @keyframes floatUp {
+      0% { transform: translateY(110vh) rotate(0deg) scale(0.9); opacity: 0; }
+      10% { opacity: 1; }
+      90% { opacity: 1; }
+      100% { transform: translateY(-10vh) rotate(360deg) scale(1.05); opacity: 0; }
+    }
   </style>
 </head>
 <body>
+  <div class="stickers" id="stickers"></div>
+
   <div class="card">
     <div class="header">
       <div class="badge">💌</div>
@@ -233,8 +263,8 @@
       Хочу пригласить тебя на свидание. Выбери вариант, который нравится, и нажми «Да».
     </p>
 
-    <!-- Замените ссылку на своё фото -->
-    <div class="photo">
+    <!-- Фото или GIF. Можно заменить на <video autoplay loop muted> -->
+    <div class="media">
       <img src="https://images.unsplash.com/photo-1518621736915-f3b1c41bfd00?q=80&w=1200&auto=format&fit=crop" alt="Фото для приглашения" />
     </div>
 
@@ -260,29 +290,59 @@
 
     <div class="result" id="result"></div>
 
-    <!-- Форма отправки ответа на почту -->
-    <div class="email-form" id="emailForm">
-      <input type="email" id="emailInput" placeholder="Твой email (необязательно)" />
-      <button id="sendBtn">Отправить</button>
+    <!-- Форма как в Invitik -->
+    <div class="form-block" id="formBlock">
+      <div class="form-row">
+        <input type="text" id="nameInput" placeholder="Твоё имя" />
+      </div>
+      <div class="form-row">
+        <input type="text" id="contactInput" placeholder="Telegram или телефон (как удобнее)" />
+      </div>
+      <div class="form-row">
+        <button id="sendBtn">Отправить ответ</button>
+      </div>
+      <div class="status" id="status"></div>
     </div>
-    <div class="status" id="status"></div>
 
     <div class="hint">Можно просто отправить скрин этого экрана в чат.</div>
   </div>
 
   <script>
+    // Плавающие стикеры
+    const stickersEl = document.getElementById('stickers');
+    const stickerList = ['💖','✨','🌸','🦋','🍓','💫','🫶','🌙','🔥','🍒'];
+
+    function createSticker() {
+      const s = document.createElement('div');
+      s.className = 'sticker';
+      s.textContent = stickerList[Math.floor(Math.random() * stickerList.length)];
+      const left = Math.random() * 100; // vw
+      const duration = 8 + Math.random() * 6; // sec
+      const size = 22 + Math.random() * 18; // px
+      s.style.left = left + 'vw';
+      s.style.animationDuration = duration + 's';
+      s.style.fontSize = size + 'px';
+      stickersEl.appendChild(s);
+      setTimeout(() => s.remove(), (duration + 1) * 1000);
+    }
+    for (let i = 0; i < 16; i++) {
+      setTimeout(createSticker, i * 220);
+    }
+    setInterval(createSticker, 900);
+
     const yesBtn = document.getElementById('yesBtn');
     const noBtn = document.getElementById('noBtn');
     const result = document.getElementById('result');
-    const emailForm = document.getElementById('emailForm');
-    const emailInput = document.getElementById('emailInput');
+    const formBlock = document.getElementById('formBlock');
+    const nameInput = document.getElementById('nameInput');
+    const contactInput = document.getElementById('contactInput');
     const sendBtn = document.getElementById('sendBtn');
     const status = document.getElementById('status');
 
     // Убегающая кнопка «Нет»
     let noMoveCount = 0;
     noBtn.addEventListener('mouseenter', () => {
-      if (noMoveCount > 12) return; // чтобы совсем не бесила
+      if (noMoveCount > 12) return;
       const maxX = 140;
       const maxY = 60;
       const x = (Math.random() - 0.5) * 2 * maxX;
@@ -304,8 +364,8 @@
       yesBtn.disabled = true;
       noBtn.disabled = true;
 
-      // Показываем форму для email
-      emailForm.classList.add('show');
+      // Показываем форму как в Invitik
+      formBlock.classList.add('show');
     });
 
     noBtn.addEventListener('click', () => {
@@ -320,7 +380,9 @@
       const plan = document.querySelector('input[name="plan"]:checked');
       const planValue = plan ? plan.value : 'unknown';
       const planText = plan ? plan.nextElementSibling.textContent : 'свидание';
-      const email = emailInput.value.trim();
+
+      const name = nameInput.value.trim() || 'Не указано';
+      const contact = contactInput.value.trim() || 'Не указано';
 
       // ВАША ПОЧТА — замените на свою
       const myEmail = "your_email@example.com";
@@ -332,8 +394,9 @@
         "Я ответил(а) на твоё приглашение:",
         "- Решение: ДА",
         `- Выбор: ${planText}`,
-        email ? `- Email: ${email}` : ""
-      ].filter(Boolean);
+        `- Имя: ${name}`,
+        `- Контакт: ${contact}`
+      ];
 
       const body = encodeURIComponent(bodyLines.join("\n"));
       const mailtoUrl = `mailto:${myEmail}?subject=${encodeURIComponent(subject)}&body=${body}`;
