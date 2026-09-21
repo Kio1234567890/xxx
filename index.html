@@ -6,58 +6,92 @@
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <style>
     :root {
-      --bg: #0f172a;
-      --card: #111827;
-      --text: #e5e7eb;
+      --bg: #0b1021;
+      --card: rgba(255,255,255,0.06);
+      --card-border: rgba(255,255,255,0.12);
+      --text: #f3f4f6;
       --muted: #9ca3af;
-      --accent: #f43f5e;
-      --accent-2: #22d3ee;
+      --accent: #ff4d6d;
       --btn: #1f2937;
       --btn-hover: #374151;
     }
+
     * { box-sizing: border-box; }
-    body {
+    html, body {
+      height: 100%;
       margin: 0;
       font-family: system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
-      background: radial-gradient(1200px 600px at 10% -10%, #1e293b, var(--bg));
       color: var(--text);
+      background: radial-gradient(1000px 500px at 10% -10%, #1e293b, var(--bg));
+      overflow-x: hidden;
+    }
+
+    body {
       display: grid;
       place-items: center;
-      min-height: 100vh;
-      padding: 24px;
+      padding: 20px;
     }
+
     .card {
       width: 100%;
       max-width: 520px;
-      background: linear-gradient(180deg, rgba(255,255,255,0.04), rgba(255,255,255,0.02));
-      border: 1px solid rgba(255,255,255,0.08);
-      border-radius: 16px;
-      padding: 24px;
-      box-shadow: 0 20px 60px rgba(0,0,0,0.35);
+      background: linear-gradient(180deg, rgba(255,255,255,0.08), rgba(255,255,255,0.04));
+      border: 1px solid var(--card-border);
+      border-radius: 18px;
+      padding: 20px;
+      box-shadow: 0 25px 80px rgba(0,0,0,0.45);
       backdrop-filter: blur(8px);
+      animation: cardIn 0.8s cubic-bezier(.2,.8,.2,1);
+      position: relative;
+      overflow: hidden;
+    }
+    @keyframes cardIn {
+      from { opacity: 0; transform: translateY(20px) scale(0.98); }
+      to { opacity: 1; transform: translateY(0) scale(1); }
+    }
+
+    .header {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      margin-bottom: 8px;
+    }
+    .badge {
+      width: 40px;
+      height: 40px;
+      border-radius: 12px;
+      background: linear-gradient(135deg, var(--accent), #fb7185);
+      display: grid;
+      place-items: center;
+      font-size: 20px;
+      box-shadow: 0 10px 30px rgba(255,77,109,0.35);
+      animation: pulse 2s ease-in-out infinite;
+    }
+    @keyframes pulse {
+      0%, 100% { transform: scale(1); }
+      50% { transform: scale(1.06); }
     }
     .title {
-      font-size: 26px;
+      font-size: 24px;
       font-weight: 800;
-      margin: 0 0 8px;
-      letter-spacing: 0.2px;
+      margin: 0;
+      letter-spacing: 0.3px;
     }
     .subtitle {
-      font-size: 15px;
+      font-size: 14px;
       color: var(--muted);
-      margin: 0 0 18px;
+      margin: 4px 0 12px;
       line-height: 1.4;
     }
+
     .photo {
       width: 100%;
       height: 180px;
-      border-radius: 12px;
+      border-radius: 14px;
       background: #0b1220;
-      display: grid;
-      place-items: center;
-      margin: 10px 0 16px;
-      border: 1px solid rgba(255,255,255,0.06);
+      border: 1px solid rgba(255,255,255,0.08);
       overflow: hidden;
+      margin: 8px 0 12px;
     }
     .photo img {
       width: 100%;
@@ -65,77 +99,141 @@
       object-fit: cover;
       display: block;
     }
+
     .options {
       display: grid;
-      gap: 10px;
-      margin: 10px 0 16px;
+      gap: 8px;
+      margin: 10px 0 12px;
     }
     .option {
       display: flex;
       align-items: center;
       gap: 10px;
-      background: var(--btn);
-      border: 1px solid rgba(255,255,255,0.06);
-      padding: 12px 14px;
+      background: rgba(255,255,255,0.04);
+      border: 1px solid rgba(255,255,255,0.08);
+      padding: 10px 12px;
       border-radius: 12px;
       font-size: 14px;
+      transition: transform 0.12s ease, background 0.15s ease, border-color 0.15s ease;
+    }
+    .option:hover {
+      transform: translateY(-1px);
+      background: rgba(255,255,255,0.06);
+      border-color: rgba(255,255,255,0.14);
     }
     .option input {
       accent-color: var(--accent);
       width: 18px;
       height: 18px;
     }
+
     .actions {
       display: flex;
       gap: 10px;
-      margin-top: 8px;
+      margin-top: 6px;
+      position: relative;
+      min-height: 44px;
     }
     button {
       flex: 1;
       border: none;
       border-radius: 12px;
-      padding: 12px 14px;
-      font-weight: 700;
+      padding: 11px 14px;
+      font-weight: 800;
       font-size: 15px;
       cursor: pointer;
-      transition: transform 0.06s ease, background 0.15s ease;
+      transition: transform 0.08s ease, filter 0.15s ease, background 0.15s ease;
+      position: relative;
+      overflow: hidden;
     }
     .btn-yes {
       background: linear-gradient(135deg, var(--accent), #fb7185);
       color: white;
+      box-shadow: 0 10px 30px rgba(255,77,109,0.35);
+      animation: yesPulse 2s ease-in-out infinite;
+    }
+    @keyframes yesPulse {
+      0%, 100% { transform: scale(1); }
+      50% { transform: scale(1.04); }
     }
     .btn-no {
       background: var(--btn);
       color: var(--text);
-      border: 1px solid rgba(255,255,255,0.08);
+      border: 1px solid rgba(255,255,255,0.1);
     }
     button:hover { transform: translateY(-1px); }
     .btn-yes:hover { filter: brightness(1.05); }
     .btn-no:hover { background: var(--btn-hover); }
 
     .result {
-      margin-top: 14px;
+      margin-top: 12px;
       font-size: 14px;
-      color: var(--muted);
+      color: #d1d5db;
       display: none;
+      background: rgba(255,255,255,0.05);
+      border: 1px solid rgba(255,255,255,0.1);
+      border-radius: 12px;
+      padding: 10px 12px;
     }
     .result.show { display: block; }
+
     .hint {
       font-size: 12px;
       color: var(--muted);
-      margin-top: 8px;
+      margin-top: 10px;
       text-align: center;
     }
+
+    /* Форма для email (появляется после «Да») */
+    .email-form {
+      margin-top: 12px;
+      display: none;
+      gap: 8px;
+    }
+    .email-form.show { display: flex; }
+    .email-form input {
+      flex: 1;
+      background: rgba(255,255,255,0.06);
+      border: 1px solid rgba(255,255,255,0.12);
+      border-radius: 10px;
+      padding: 10px 12px;
+      color: var(--text);
+      font-size: 14px;
+      outline: none;
+    }
+    .email-form input::placeholder { color: #6b7280; }
+    .email-form button {
+      flex: 0 0 auto;
+      background: #22c55e;
+      color: white;
+      border: none;
+      border-radius: 10px;
+      padding: 10px 14px;
+      font-weight: 700;
+      font-size: 14px;
+      cursor: pointer;
+    }
+    .email-form button:hover { filter: brightness(1.05); }
+
+    .status {
+      margin-top: 8px;
+      font-size: 13px;
+      display: none;
+    }
+    .status.show { display: block; }
   </style>
 </head>
 <body>
   <div class="card">
-    <h1 class="title">Привет, [ИМЯ]! 💌</h1>
+    <div class="header">
+      <div class="badge">💌</div>
+      <h1 class="title">Привет, [ИМЯ]!</h1>
+    </div>
     <p class="subtitle">
-      Хочу пригласить тебя на свидание. Выбери, что тебе больше нравится, и нажми «Да».
+      Хочу пригласить тебя на свидание. Выбери вариант, который нравится, и нажми «Да».
     </p>
 
-    <!-- Замените src на ссылку на ваше фото (можно с Imgur / вашего хостинга) -->
+    <!-- Замените ссылку на своё фото -->
     <div class="photo">
       <img src="https://images.unsplash.com/photo-1518621736915-f3b1c41bfd00?q=80&w=1200&auto=format&fit=crop" alt="Фото для приглашения" />
     </div>
@@ -143,15 +241,15 @@
     <div class="options">
       <label class="option">
         <input type="radio" name="plan" value="coffee" checked />
-        <span>Кофе + прогулка</span>
+        <span>Кофе + прогулка ☕️🚶‍♀️</span>
       </label>
       <label class="option">
         <input type="radio" name="plan" value="cinema" />
-        <span>Фильм в кинотеатре</span>
+        <span>Фильм в кинотеатре 🎬🍿</span>
       </label>
       <label class="option">
         <input type="radio" name="plan" value="online" />
-        <span>Онлайн‑свидание (видеозвонок + фильм/игра)</span>
+        <span>Онлайн‑свидание (видеозвонок + фильм/игра) 🎮📺</span>
       </label>
     </div>
 
@@ -161,21 +259,53 @@
     </div>
 
     <div class="result" id="result"></div>
-    <div class="hint">Отправь скрин ответа или просто напиши в чат — я увижу.</div>
+
+    <!-- Форма отправки ответа на почту -->
+    <div class="email-form" id="emailForm">
+      <input type="email" id="emailInput" placeholder="Твой email (необязательно)" />
+      <button id="sendBtn">Отправить</button>
+    </div>
+    <div class="status" id="status"></div>
+
+    <div class="hint">Можно просто отправить скрин этого экрана в чат.</div>
   </div>
 
   <script>
     const yesBtn = document.getElementById('yesBtn');
     const noBtn = document.getElementById('noBtn');
     const result = document.getElementById('result');
+    const emailForm = document.getElementById('emailForm');
+    const emailInput = document.getElementById('emailInput');
+    const sendBtn = document.getElementById('sendBtn');
+    const status = document.getElementById('status');
+
+    // Убегающая кнопка «Нет»
+    let noMoveCount = 0;
+    noBtn.addEventListener('mouseenter', () => {
+      if (noMoveCount > 12) return; // чтобы совсем не бесила
+      const maxX = 140;
+      const maxY = 60;
+      const x = (Math.random() - 0.5) * 2 * maxX;
+      const y = (Math.random() - 0.5) * 2 * maxY;
+      noBtn.style.transform = `translate(${x}px, ${y}px)`;
+      noMoveCount++;
+    });
+    noBtn.addEventListener('mouseleave', () => {
+      noBtn.style.transform = 'translate(0,0)';
+    });
 
     yesBtn.addEventListener('click', () => {
       const plan = document.querySelector('input[name="plan"]:checked');
       const planText = plan ? plan.nextElementSibling.textContent : 'свидание';
-      result.textContent = `Супер! Ты выбрала(а): ${planText}. Напиши удобное время — и я забронирую.`;
+
+      result.textContent = `Супер! Ты выбрала(а): ${planText}.`;
       result.classList.add('show');
+
       yesBtn.disabled = true;
       noBtn.disabled = true;
+
+      // Показываем форму для email
+      emailForm.classList.add('show');
     });
 
     noBtn.addEventListener('click', () => {
@@ -183,6 +313,39 @@
       result.classList.add('show');
       yesBtn.disabled = true;
       noBtn.disabled = true;
+    });
+
+    // Отправка ответа на вашу почту через mailto
+    sendBtn.addEventListener('click', () => {
+      const plan = document.querySelector('input[name="plan"]:checked');
+      const planValue = plan ? plan.value : 'unknown';
+      const planText = plan ? plan.nextElementSibling.textContent : 'свидание';
+      const email = emailInput.value.trim();
+
+      // ВАША ПОЧТА — замените на свою
+      const myEmail = "your_email@example.com";
+
+      const subject = "Ответ на приглашение (Да)";
+      const bodyLines = [
+        "Привет!",
+        "",
+        "Я ответил(а) на твоё приглашение:",
+        "- Решение: ДА",
+        `- Выбор: ${planText}`,
+        email ? `- Email: ${email}` : ""
+      ].filter(Boolean);
+
+      const body = encodeURIComponent(bodyLines.join("\n"));
+      const mailtoUrl = `mailto:${myEmail}?subject=${encodeURIComponent(subject)}&body=${body}`;
+
+      status.textContent = "Сейчас откроется почтовый клиент для отправки…";
+      status.classList.add('show');
+
+      window.location.href = mailtoUrl;
+
+      setTimeout(() => {
+        status.textContent = "Готово! Если почта не открылась — можешь просто написать мне в чат.";
+      }, 1500);
     });
   </script>
 </body>
