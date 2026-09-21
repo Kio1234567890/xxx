@@ -1,0 +1,189 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8" />
+  <title>Приглашение на свидание</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <style>
+    :root {
+      --bg: #0f172a;
+      --card: #111827;
+      --text: #e5e7eb;
+      --muted: #9ca3af;
+      --accent: #f43f5e;
+      --accent-2: #22d3ee;
+      --btn: #1f2937;
+      --btn-hover: #374151;
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      font-family: system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
+      background: radial-gradient(1200px 600px at 10% -10%, #1e293b, var(--bg));
+      color: var(--text);
+      display: grid;
+      place-items: center;
+      min-height: 100vh;
+      padding: 24px;
+    }
+    .card {
+      width: 100%;
+      max-width: 520px;
+      background: linear-gradient(180deg, rgba(255,255,255,0.04), rgba(255,255,255,0.02));
+      border: 1px solid rgba(255,255,255,0.08);
+      border-radius: 16px;
+      padding: 24px;
+      box-shadow: 0 20px 60px rgba(0,0,0,0.35);
+      backdrop-filter: blur(8px);
+    }
+    .title {
+      font-size: 26px;
+      font-weight: 800;
+      margin: 0 0 8px;
+      letter-spacing: 0.2px;
+    }
+    .subtitle {
+      font-size: 15px;
+      color: var(--muted);
+      margin: 0 0 18px;
+      line-height: 1.4;
+    }
+    .photo {
+      width: 100%;
+      height: 180px;
+      border-radius: 12px;
+      background: #0b1220;
+      display: grid;
+      place-items: center;
+      margin: 10px 0 16px;
+      border: 1px solid rgba(255,255,255,0.06);
+      overflow: hidden;
+    }
+    .photo img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      display: block;
+    }
+    .options {
+      display: grid;
+      gap: 10px;
+      margin: 10px 0 16px;
+    }
+    .option {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      background: var(--btn);
+      border: 1px solid rgba(255,255,255,0.06);
+      padding: 12px 14px;
+      border-radius: 12px;
+      font-size: 14px;
+    }
+    .option input {
+      accent-color: var(--accent);
+      width: 18px;
+      height: 18px;
+    }
+    .actions {
+      display: flex;
+      gap: 10px;
+      margin-top: 8px;
+    }
+    button {
+      flex: 1;
+      border: none;
+      border-radius: 12px;
+      padding: 12px 14px;
+      font-weight: 700;
+      font-size: 15px;
+      cursor: pointer;
+      transition: transform 0.06s ease, background 0.15s ease;
+    }
+    .btn-yes {
+      background: linear-gradient(135deg, var(--accent), #fb7185);
+      color: white;
+    }
+    .btn-no {
+      background: var(--btn);
+      color: var(--text);
+      border: 1px solid rgba(255,255,255,0.08);
+    }
+    button:hover { transform: translateY(-1px); }
+    .btn-yes:hover { filter: brightness(1.05); }
+    .btn-no:hover { background: var(--btn-hover); }
+
+    .result {
+      margin-top: 14px;
+      font-size: 14px;
+      color: var(--muted);
+      display: none;
+    }
+    .result.show { display: block; }
+    .hint {
+      font-size: 12px;
+      color: var(--muted);
+      margin-top: 8px;
+      text-align: center;
+    }
+  </style>
+</head>
+<body>
+  <div class="card">
+    <h1 class="title">Привет, [ИМЯ]! 💌</h1>
+    <p class="subtitle">
+      Хочу пригласить тебя на свидание. Выбери, что тебе больше нравится, и нажми «Да».
+    </p>
+
+    <!-- Замените src на ссылку на ваше фото (можно с Imgur / вашего хостинга) -->
+    <div class="photo">
+      <img src="https://images.unsplash.com/photo-1518621736915-f3b1c41bfd00?q=80&w=1200&auto=format&fit=crop" alt="Фото для приглашения" />
+    </div>
+
+    <div class="options">
+      <label class="option">
+        <input type="radio" name="plan" value="coffee" checked />
+        <span>Кофе + прогулка</span>
+      </label>
+      <label class="option">
+        <input type="radio" name="plan" value="cinema" />
+        <span>Фильм в кинотеатре</span>
+      </label>
+      <label class="option">
+        <input type="radio" name="plan" value="online" />
+        <span>Онлайн‑свидание (видеозвонок + фильм/игра)</span>
+      </label>
+    </div>
+
+    <div class="actions">
+      <button class="btn-yes" id="yesBtn">Да, я пойду! ✨</button>
+      <button class="btn-no" id="noBtn">Нет, спасибо</button>
+    </div>
+
+    <div class="result" id="result"></div>
+    <div class="hint">Отправь скрин ответа или просто напиши в чат — я увижу.</div>
+  </div>
+
+  <script>
+    const yesBtn = document.getElementById('yesBtn');
+    const noBtn = document.getElementById('noBtn');
+    const result = document.getElementById('result');
+
+    yesBtn.addEventListener('click', () => {
+      const plan = document.querySelector('input[name="plan"]:checked');
+      const planText = plan ? plan.nextElementSibling.textContent : 'свидание';
+      result.textContent = `Супер! Ты выбрала(а): ${planText}. Напиши удобное время — и я забронирую.`;
+      result.classList.add('show');
+      yesBtn.disabled = true;
+      noBtn.disabled = true;
+    });
+
+    noBtn.addEventListener('click', () => {
+      result.textContent = `Понял(а), без проблем. Если передумаешь — дай знать, я не обижаюсь 😊`;
+      result.classList.add('show');
+      yesBtn.disabled = true;
+      noBtn.disabled = true;
+    });
+  </script>
+</body>
+</html>
